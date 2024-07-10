@@ -1,4 +1,4 @@
-﻿namespace ECommerce.Work
+﻿namespace ECommerce.Business
 {
     public class Class1
     {
