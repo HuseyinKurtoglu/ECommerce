@@ -1,4 +1,4 @@
-namespace ECommerce.API
+namespace deneme
 {
     public class WeatherForecast
     {

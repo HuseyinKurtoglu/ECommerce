@@ -1,6 +1,25 @@
-@ECommerce.API_HostAddress = http://localhost:5257
+@ECommerce_API_HostAddress = http://localhost:5257
 
-GET {{ECommerce.API_HostAddress}}/weatherforecast/
-Accept: application/json
 
-###
+
+POST {{ECommerce_API_HostAddress}}/api/Users
+Content-Type: application/json
+
+{
+    "FirstName": "Hüseyin",
+    "LastName": "Kurtoðlu",
+    "Email": "huseyin@example.com",
+    "Password": "password123"
+}
+
+
+PUT {{ECommerce_API_HostAddress}}/api/Users
+Content-Type: application/json
+
+{
+    "UserID": 1,
+    "FirstName": "Enes",
+    "LastName": "Polat",
+    "Email": "enes@example.com",
+    "Password": "newpassword456"
+}
