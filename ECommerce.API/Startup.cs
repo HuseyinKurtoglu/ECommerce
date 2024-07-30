@@ -1,4 +1,4 @@
-﻿using ECommerce.Data;
+﻿using ECommerce.DataAcces;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
 public class Startup

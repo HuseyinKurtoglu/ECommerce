@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using Microsoft.EntityFrameworkCore;
 
-namespace ECommerce.Data.Models;
+namespace ECommerce.DataAcces.Models;
 
 public partial class ECommerceDbContext : DbContext
 {

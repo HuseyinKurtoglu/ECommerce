@@ -1,11 +1,10 @@
-﻿using ECommerce.Entities;
-using Microsoft.AspNetCore.Mvc;
-using System.Threading.Tasks;
+﻿using Microsoft.AspNetCore.Mvc;
+using ECommerce.Entities;
 
-namespace ECommerce.API.Controllers
+namespace ECommerce.API
 {
-    [ApiController]
     [Route("api/[controller]")]
+    [ApiController]
     public class UsersController : ControllerBase
     {
         private readonly IUserService _userService;
@@ -15,14 +14,7 @@ namespace ECommerce.API.Controllers
             _userService = userService;
         }
 
-        [HttpPost]
-        public IActionResult Post(User user)
-        {
-            _userService.AddUser(user);
-            return Ok();
-        }
-
-        [HttpGet]
+        [HttpGet("{id}")]
         public IActionResult Get(int id)
         {
             try
@@ -36,23 +28,57 @@ namespace ECommerce.API.Controllers
             }
             catch (Exception ex)
             {
-                return StatusCode(500, "HATA57 " + ex.Message);
+                return StatusCode(500, $"Internal server error: {ex.Message}");
             }
         }
-        [HttpPut("{UserID}")]
-        public IActionResult Update(int UserID, [FromBody] User user)
+
+        [HttpPost]
+        public IActionResult Post([FromBody] User user)
         {
-            var findResult = _userService.GetUserById(UserID);
-            if (findResult == null)
+            try
             {
-                return NotFound();
+                if (user == null)
+                {
+                    return BadRequest("User object is null");
+                }
+
+                _userService.AddUser(user);
+                return CreatedAtAction(nameof(Get), new { id = user.UserID }, user);
             }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Internal server error: {ex.Message}");
+            }
+        }
 
-     
-            _userService.UpdateUser(findResult);
+        [HttpPut("{id}")]
+        public IActionResult Put(int id, [FromBody] User user)
+        {
+            try
+            {
+                if (user == null)
+                {
+                    return BadRequest("User object is null");
+                }
 
-            return Ok(findResult);
+                var existingUser = _userService.GetUserById(id);
+                if (existingUser == null)
+                {
+                    return NotFound();
+                }
+
+                existingUser.UserName = user.UserName;
+                existingUser.Email = user.Email;
+                existingUser.Password = user.Password;
+                existingUser.UpdatedDate = DateTime.UtcNow;
+
+                _userService.UpdateUser(existingUser);
+                return Ok(existingUser);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Internal server error: {ex.Message}");
+            }
         }
     }
-
 }

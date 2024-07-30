@@ -1,8 +1,4 @@
-﻿
-using ECommerce.Data;
-using ECommerce.Entities;
-using System.Collections.Generic;
-using System.Threading.Tasks;
+﻿using ECommerce.Entities;
 
 public class UserService : IUserService
 {
@@ -13,16 +9,17 @@ public class UserService : IUserService
         _userRepository = userRepository;
     }
 
+    public User GetUserById(int userId)
+    {
+        return _userRepository.GetUserById(userId);
+    }
+
     public void AddUser(User user)
     {
         _userRepository.AddUser(user);
     }
-    public User GetUserById(int UserID)
-    {
-     return _userRepository.GetUserById(UserID);
-    }
 
-    public void UpdateUser(User user)  
+    public void UpdateUser(User user)
     {
         _userRepository.UpdateUser(user);
     }

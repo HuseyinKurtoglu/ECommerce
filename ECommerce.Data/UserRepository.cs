@@ -1,8 +1,5 @@
-﻿using ECommerce.Data;
+﻿using ECommerce.DataAcces;
 using ECommerce.Entities;
-using Microsoft.EntityFrameworkCore;
-using System.Collections.Generic;
-using System.Threading.Tasks;
 
 public class UserRepository : IUserRepository
 {
@@ -13,18 +10,17 @@ public class UserRepository : IUserRepository
         _context = context;
     }
 
+    public User GetUserById(int userId)
+    {
+        return _context.Users.Find(userId);
+    }
+
     public void AddUser(User user)
     {
         _context.Users.Add(user);
         _context.SaveChanges();
-
     }
-    public User GetUserById(int UserID)
-    {
 
-        return _context.Users.Find(UserID);
-
-    }
     public void UpdateUser(User user)
     {
         _context.Users.Update(user);
