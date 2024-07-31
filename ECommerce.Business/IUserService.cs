@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 
 public interface IUserService
 {
-    void AddUser(User user);
-    User GetUserById(int id);
-    void UpdateUser(User user);
+    ServiceResult<User> AddUser(User user);
+    ServiceResult<User> GetUserById(int id);
+    ServiceResult<User> UpdateUser(int id, User user);
 }

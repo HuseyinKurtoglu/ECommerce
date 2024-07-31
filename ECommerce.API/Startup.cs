@@ -1,6 +1,7 @@
-﻿using ECommerce.DataAcces;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
+using ECommerce.DataAcces;
+
 public class Startup
 {
     public IConfiguration Configuration { get; }

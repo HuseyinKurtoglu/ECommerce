@@ -1,4 +1,6 @@
-﻿using ECommerce.Entities;
+﻿using System;
+using ECommerce.DataAcces;
+using ECommerce.Entities;
 
 public class UserService : IUserService
 {
@@ -9,18 +11,62 @@ public class UserService : IUserService
         _userRepository = userRepository;
     }
 
-    public User GetUserById(int userId)
+    public ServiceResult<User> GetUserById(int userId)
     {
-        return _userRepository.GetUserById(userId);
+        try
+        {
+            var user = _userRepository.GetUserById(userId);
+            if (user == null)
+            {
+                return new ServiceResult<User> { Success = false, Message = "User not found." };
+            }
+            return new ServiceResult<User> { Success = true, Data = user };
+        }
+        catch (Exception ex)
+        {
+            return new ServiceResult<User> { Success = false, Message = $"Error user by UserID: {ex.Message}" };
+        }
     }
 
-    public void AddUser(User user)
+    public ServiceResult<User> AddUser(User user)
     {
-        _userRepository.AddUser(user);
+        try
+        {
+            if (user == null)
+            {
+                return new ServiceResult<User> { Success = false, Message = "User object is null." };
+            }
+
+            _userRepository.AddUser(user);
+            return new ServiceResult<User> { Success = true, Data = user };
+        }
+        catch (Exception ex)
+        {
+            return new ServiceResult<User> { Success = false, Message = $"Error adding user: {ex.Message}" };
+        }
     }
 
-    public void UpdateUser(User user)
+    public ServiceResult<User> UpdateUser(int userId, User user)
     {
-        _userRepository.UpdateUser(user);
+        try
+        {
+            var existingUser = _userRepository.GetUserById(userId);
+            if (existingUser == null)
+            {
+                return new ServiceResult<User> { Success = false, Message = "User not found." };
+            }
+
+            existingUser.UserName = user.UserName;
+            existingUser.Email = user.Email;
+            existingUser.Password = user.Password;
+            existingUser.UpdatedDate = DateTime.UtcNow;
+
+            _userRepository.UpdateUser(existingUser);
+            return new ServiceResult<User> { Success = true, Data = existingUser };
+        }
+        catch (Exception ex)
+        {
+            return new ServiceResult<User> { Success = false, Message = $"Error updating user: {ex.Message}" };
+        }
     }
 }
