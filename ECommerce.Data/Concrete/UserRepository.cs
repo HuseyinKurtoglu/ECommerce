@@ -1,4 +1,4 @@
-﻿using ECommerce.DataAcces;
+﻿using ECommerce.DataAcces.Entity;
 using ECommerce.Entities;
 
 public class UserRepository : IUserRepository

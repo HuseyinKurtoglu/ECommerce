@@ -1,6 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
-using ECommerce.DataAcces;
+using ECommerce.DataAcces.Entity;
 
 public class Startup
 {
