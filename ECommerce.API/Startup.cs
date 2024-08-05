@@ -1,6 +1,14 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
 using ECommerce.DataAcces.Entity;
+using Microsoft.Data.SqlClient;
+using System.Data;
+using ECommerce.DataAcces.Absract;
+using ECommerce.DataAcces.Concrete;
+using ECommerce.Business.Absract;
+using ECommerce.Business.Concrete;
+using ECommerce.DataAccess;
+using ECommerce.Business;
 
 public class Startup
 {
@@ -22,9 +30,17 @@ public class Startup
 
         services.AddDbContext<ECommerceDbContext>(options =>
             options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
-
+        services.AddScoped<IDbConnection>(sp => new SqlConnection(Configuration.GetConnectionString("DefaultConnection")));
+        services.AddScoped<IOrderRepository, OrderRepository>();
+        services.AddScoped<IOrderService, OrderService>();
         services.AddScoped<IUserService, UserService>();
         services.AddScoped<IUserRepository, UserRepository>();
+        services.AddScoped<ICustomerRepository, CustomerRepository>();
+        services.AddScoped<ICustomerService, CustomerService>();
+        services.AddScoped<IProductRepository, ProductRepository>();
+        services.AddScoped<IProductService, ProductService>();
+        services.AddScoped<IShipperRepository, ShipperRepository>();
+        services.AddScoped<IShipperService, ShipperService>();
     }
 
     public void Configure(IApplicationBuilder app, IWebHostEnvironment env)

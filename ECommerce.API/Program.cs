@@ -1,35 +1,22 @@
-﻿using ECommerce.DataAcces.Entity;
-using Microsoft.EntityFrameworkCore;
-using System.Data.SqlClient;
-var builder = WebApplication.CreateBuilder(args);
+﻿using Microsoft.AspNetCore.Hosting;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
 
-builder.Services.AddControllers();
-builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
-
-builder.Services.AddDbContext<ECommerceDbContext>(options =>
-    options.UseSqlServer(builder.Configuration.GetConnectionString("SqlConnection connection = new SqlConnection(\"Server=(localdb)\\localdb;Database=ECommerceDB;Trusted_Connection=True;MultipleActiveResultSets=true;\");")));
-
-builder.Services.AddScoped<IUserService, UserService>();
-builder.Services.AddScoped<IUserRepository, UserRepository>();
-
-var app = builder.Build();
-
-if (app.Environment.IsDevelopment())
+namespace ECommerce.API
 {
-    app.UseDeveloperExceptionPage();
+    public class Program
+    {
+        public static void Main(string[] args)
+        {
+            CreateHostBuilder(args).Build().Run();
+        }
+
+        public static IHostBuilder CreateHostBuilder(string[] args) =>
+            Host.CreateDefaultBuilder(args)
+                .ConfigureWebHostDefaults(webBuilder =>
+                {
+                    webBuilder.UseStartup<Startup>();
+                });
+    }
 }
-
-app.UseHttpsRedirection();
-
-app.UseAuthorization();
-
-app.UseSwagger();
-app.UseSwaggerUI(c =>
-{
-    c.SwaggerEndpoint("/swagger/v1/swagger.json", "ECommerce API v1");
-});
-
-app.MapControllers();
-
-app.Run();
