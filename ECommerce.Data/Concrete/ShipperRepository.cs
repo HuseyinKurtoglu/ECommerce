@@ -1,4 +1,5 @@
 ﻿using Dapper;
+using ECommerce.DataAcces.Absract;
 using ECommerce.DataAcces.Models;
 using ECommerce.Entities;
 using Microsoft.Data.SqlClient;
@@ -7,7 +8,7 @@ using System.Collections.Generic;
 using System.Data;
 using System.Threading.Tasks;
 
-namespace ECommerce.DataAccess
+namespace ECommerce.DataAcces.Concrete
 {
     public class ShipperRepository : IShipperRepository
     {

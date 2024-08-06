@@ -7,8 +7,9 @@ using ECommerce.DataAcces.Absract;
 using ECommerce.DataAcces.Concrete;
 using ECommerce.Business.Absract;
 using ECommerce.Business.Concrete;
-using ECommerce.DataAccess;
-using ECommerce.Business;
+using ECommerce.DataAcces.Models;
+using FluentValidation;
+using ECommerce.Entities;
 
 public class Startup
 {
@@ -23,13 +24,18 @@ public class Startup
     {
         services.AddControllers();
 
+
         services.AddSwaggerGen(c =>
         {
             c.SwaggerDoc("v1", new OpenApiInfo { Title = "ECommerce API", Version = "v1" });
         });
 
-        services.AddDbContext<ECommerceDbContext>(options =>
+        services.AddDbContext<ECommerce.DataAcces.Entity.ECommerceDbContext>(options =>
             options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
+        services.AddTransient<IValidator<Order>, OrderValidator>();
+        services.AddTransient<IValidator<OrderDetail>, OrderDetailValidator>();
+        services.AddTransient<IOrderService, OrderService>();
+        services.AddTransient<IOrderRepository, OrderRepository>();
         services.AddScoped<IDbConnection>(sp => new SqlConnection(Configuration.GetConnectionString("DefaultConnection")));
         services.AddScoped<IOrderRepository, OrderRepository>();
         services.AddScoped<IOrderService, OrderService>();
@@ -49,6 +55,7 @@ public class Startup
         {
             app.UseDeveloperExceptionPage();
         }
+        app.UseMiddleware<ExceptionMiddleware>();
 
         app.UseHttpsRedirection();
 

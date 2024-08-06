@@ -1,71 +1,80 @@
-﻿using ECommerce.Business.Absract;
+﻿using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
+using ECommerce.Business.Absract;
 using ECommerce.DataAcces.Absract;
 using ECommerce.DataAcces.Models;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using ECommerce.Entities;
+using FluentValidation;
+using FluentValidation.Results;
 
-namespace ECommerce.Business.Concrete
+public class OrderService : IOrderService
 {
-    public class OrderService : IOrderService
+    private readonly IOrderRepository _orderRepository;
+    private readonly IValidator<Order> _orderValidator;
+    private readonly IValidator<OrderDetail> _orderDetailValidator;
+
+    public OrderService(IOrderRepository orderRepository, IValidator<Order> orderValidator, IValidator<OrderDetail> orderDetailValidator)
     {
-        private readonly IOrderRepository _orderRepository;
-
-        public OrderService(IOrderRepository orderRepository)
-        {
-            _orderRepository = orderRepository;
-        }
-
-        public async Task<Order> GetOrderByIdAsync(int orderId)
-        {
-            return await _orderRepository.GetOrderByIdAsync(orderId);
-        }
-
-        public async Task<IEnumerable<Order>> GetAllOrdersAsync()
-        {
-            return await _orderRepository.GetAllOrdersAsync();
-        }
-
-        public async Task AddOrderAsync(Order order)
-        {
-            try
-            {
-                await _orderRepository.AddOrderAsync(order);
-            }
-            catch (Exception ex)
-            {
-                
-                throw new Exception("Error adding order", ex);
-            }
-        }
-
-        public async Task UpdateOrderAsync(Order order)
-        {
-            try
-            {
-                await _orderRepository.UpdateOrderAsync(order);
-            }
-            catch (Exception ex)
-            {
-                
-                throw new Exception("Error updating order", ex);
-            }
-        }
-
-        public async Task DeleteOrderAsync(int orderId)
-        {
-            try
-            {
-                await _orderRepository.DeleteOrderAsync(orderId);
-            }
-            catch (Exception ex)
-            {
-                
-                throw new Exception("Error deleting order", ex);
-            }
-        }
+        _orderRepository = orderRepository;
+        _orderValidator = orderValidator;
+        _orderDetailValidator = orderDetailValidator;
     }
 
+    public async Task<Order> GetOrderByIdAsync(int orderId)
+    {
+        return await _orderRepository.GetOrderByIdAsync(orderId);
+    }
+
+    public async Task<IEnumerable<Order>> GetAllOrdersAsync()
+    {
+        return await _orderRepository.GetAllOrdersAsync();
+    }
+
+    public async Task AddOrderAsync(Order order)
+    {
+        await ValidateAndExecuteAsync(order, () => _orderRepository.AddOrderAsync(order));
+    }
+
+    public async Task UpdateOrderAsync(Order order)
+    {
+        await ValidateAndExecuteAsync(order, () => _orderRepository.UpdateOrderAsync(order));
+    }
+
+    public async Task DeleteOrderAsync(int orderId)
+    {
+        await ExecuteAsync(() => _orderRepository.DeleteOrderAsync(orderId));
+    }
+
+    private async Task ValidateAndExecuteAsync(Order order, Func<Task> action)
+    {
+        ValidationResult result = await _orderValidator.ValidateAsync(order);
+        if (!result.IsValid)
+        {
+            throw new ValidationException(result.Errors);
+        }
+
+        foreach (var detail in order.OrderDetails)
+        {
+            ValidationResult detailResult = await _orderDetailValidator.ValidateAsync(detail);
+            if (!detailResult.IsValid)
+            {
+                throw new ValidationException(detailResult.Errors);
+            }
+        }
+
+        await ExecuteAsync(action);
+    }
+
+    private async Task ExecuteAsync(Func<Task> action)
+    {
+        try
+        {
+            await action();
+        }
+        catch (Exception ex)
+        {
+            throw new Exception("An error occurred while processing your request.", ex);
+        }
+    }
 }

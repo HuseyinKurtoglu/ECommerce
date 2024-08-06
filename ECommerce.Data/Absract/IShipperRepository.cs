@@ -3,7 +3,7 @@ using ECommerce.Entities;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
-namespace ECommerce.DataAccess
+namespace ECommerce.DataAcces.Absract
 {
     public interface IShipperRepository
     {

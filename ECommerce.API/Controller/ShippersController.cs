@@ -1,11 +1,11 @@
-﻿using ECommerce.Business;
+﻿using ECommerce.Business.Absract;
 using ECommerce.DataAcces.Models;
 using ECommerce.Entities;
 using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
-namespace ECommerce.API.Controllers
+namespace ECommerce.API.Controller
 {
     [Route("api/[controller]")]
     [ApiController]

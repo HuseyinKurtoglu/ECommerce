@@ -8,7 +8,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using ECommerce.DataAcces.Models;
 
-namespace ECommerce.Business
+namespace ECommerce.Business.Absract
 {
     public interface IShipperService
     {

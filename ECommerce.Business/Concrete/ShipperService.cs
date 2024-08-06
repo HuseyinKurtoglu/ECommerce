@@ -1,10 +1,11 @@
-﻿using ECommerce.DataAcces.Models;
-using ECommerce.DataAccess;
+﻿using ECommerce.Business.Absract;
+using ECommerce.DataAcces.Absract;
+using ECommerce.DataAcces.Models;
 using ECommerce.Entities;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
-namespace ECommerce.Business
+namespace ECommerce.Business.Concrete
 {
     public class ShipperService : IShipperService
     {

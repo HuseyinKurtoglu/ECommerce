@@ -1,4 +1,5 @@
 ﻿using ECommerce.Business.Absract;
+using ECommerce.Business.Concrete;
 using ECommerce.DataAcces.Models;
 using Microsoft.AspNetCore.Mvc;
 
@@ -25,16 +26,16 @@ namespace ECommerce.API.Controller
         [HttpGet("{id}")]
         public async Task<IActionResult> GetCustomerById(int id)
         {
-            var customer = await _customerService.GetCustomerByIdAsync(id);
-            if (customer == null) return NotFound();
-            return Ok(customer);
+        
+            var order = await _customerService.GetCustomerByIdAsync(id);
+            return Ok(order);
         }
 
         [HttpPost]
         public async Task<IActionResult> AddCustomer(Customer customer)
         {
-            var newCustomerId = await _customerService.AddCustomerAsync(customer);
-            return CreatedAtAction(nameof(GetCustomerById), new { id = newCustomerId }, customer);
+            await _customerService.AddCustomerAsync(customer);
+            return Ok();
         }
 
         [HttpPut("{id}")]
