@@ -1,21 +1,24 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using ECommerce.Entities;
+﻿using ECommerce.DataAcces.Models;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using ECommerce.DataAcces.Models;
-
 namespace ECommerce.Business.Absract
 {
+ 
     public interface IShipperService
     {
-        Task<int> AddShipperAsync(Shipper shipper);
-        Task<int> UpdateShipperAsync(Shipper shipper);
-        Task<int> DeleteShipperAsync(int shipperId);
-        Task<Shipper> GetShipperByIdAsync(int shipperId);
-        Task<IEnumerable<Shipper>> GetAllShippersAsync();
+        // Bir shipper'ı asenkron olarak ekleyen metodu tanımlar
+        Task<ServiceResult<int>> AddShipperAsync(Shipper shipper);
+
+        // Var olan bir shipper'ı asenkron olarak güncelleyen metodu tanımlar
+        Task<ServiceResult<int>> UpdateShipperAsync(Shipper shipper);
+
+        // Belirli bir shipper'ı asenkron olarak silen metodu tanımlar
+        Task<ServiceResult<int>> DeleteShipperAsync(int shipperId);
+
+        // Belirli bir shipper'ı asenkron olarak ID ile getiren metodu tanımlar
+        Task<ServiceResult<Shipper>> GetShipperByIdAsync(int shipperId);
+
+        // Tüm shipper'ları asenkron olarak getiren metodu tanımlar
+        Task<ServiceResult<IEnumerable<Shipper>>> GetAllShippersAsync();
     }
 }

@@ -1,78 +1,91 @@
 ﻿using ECommerce.Business.Absract;
 using ECommerce.DataAcces.Absract;
 using ECommerce.DataAcces.Models;
-using ECommerce.Entities;
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+
 
 namespace ECommerce.Business.Concrete
 {
     public class ShipperService : IShipperService
     {
-        private readonly IShipperRepository _shipperRepository;
+        private readonly IShipperRepository _shipperRepository; // IShipperRepository türünde bir veri erişim repository nesnesi
 
         public ShipperService(IShipperRepository shipperRepository)
         {
-            _shipperRepository = shipperRepository;
+            _shipperRepository = shipperRepository; // Constructor'da dependency injection yoluyla repository nesnesini alır
         }
 
-        public async Task<int> AddShipperAsync(Shipper shipper)
+        // Yeni bir shipper ekler
+        public async Task<ServiceResult<int>> AddShipperAsync(Shipper shipper)
         {
             try
             {
-                return await _shipperRepository.AddShipperAsync(shipper);
+                var result = await _shipperRepository.AddShipperAsync(shipper); // Repository'den yeni shipper ekleme işlemi
+                return ServiceResult<int>.SuccessResult(result, "Shipper başarıyla eklendi."); // Başarı durumunda sonuç döndürür
             }
             catch (Exception ex)
             {
-                throw new Exception("Error adding shipper", ex);
+                return ServiceResult<int>.FailureResult($"Shipper eklenirken hata oluştu: {ex.Message}"); // Hata durumunda sonuç döndürür
             }
         }
 
-        public async Task<int> UpdateShipperAsync(Shipper shipper)
+        // Var olan bir shipper'ı günceller
+        public async Task<ServiceResult<int>> UpdateShipperAsync(Shipper shipper)
         {
             try
             {
-                return await _shipperRepository.UpdateShipperAsync(shipper);
+                var result = await _shipperRepository.UpdateShipperAsync(shipper); // Repository'den shipper güncelleme işlemi
+                return ServiceResult<int>.SuccessResult(result, "Shipper başarıyla güncellendi."); // Başarı durumunda sonuç döndürür
             }
             catch (Exception ex)
             {
-                throw new Exception("Error updating shipper", ex);
+                return ServiceResult<int>.FailureResult($"Shipper güncellenirken hata oluştu: {ex.Message}"); // Hata durumunda sonuç döndürür
             }
         }
 
-        public async Task<int> DeleteShipperAsync(int shipperId)
+        // Bir shipper'ı siler
+        public async Task<ServiceResult<int>> DeleteShipperAsync(int shipperId)
         {
             try
             {
-                return await _shipperRepository.DeleteShipperAsync(shipperId);
+                var result = await _shipperRepository.DeleteShipperAsync(shipperId); // Repository'den shipper silme işlemi
+                return ServiceResult<int>.SuccessResult(result, "Shipper başarıyla silindi."); // Başarı durumunda sonuç döndürür
             }
             catch (Exception ex)
             {
-                throw new Exception("Error deleting shipper", ex);
+                return ServiceResult<int>.FailureResult($"Shipper silinirken hata oluştu: {ex.Message}"); // Hata durumunda sonuç döndürür
             }
         }
 
-        public async Task<Shipper> GetShipperByIdAsync(int shipperId)
+        // ID ile shipper'ı getirir
+        public async Task<ServiceResult<Shipper>> GetShipperByIdAsync(int shipperId)
         {
             try
             {
-                return await _shipperRepository.GetShipperByIdAsync(shipperId);
+                var shipper = await _shipperRepository.GetShipperByIdAsync(shipperId); // Repository'den shipper getirme işlemi
+                return shipper != null
+                    ? ServiceResult<Shipper>.SuccessResult(shipper, "Shipper başarıyla getirildi.") // Başarı durumunda shipper'ı döndürür
+                    : ServiceResult<Shipper>.FailureResult("Shipper bulunamadı."); // Şirket bulunamadıysa hata döndürür
             }
             catch (Exception ex)
             {
-                throw new Exception("Error fetching shipper by id", ex);
+                return ServiceResult<Shipper>.FailureResult($"Shipper getirilirken hata oluştu: {ex.Message}"); // Hata durumunda sonuç döndürür
             }
         }
 
-        public async Task<IEnumerable<Shipper>> GetAllShippersAsync()
+        // Tüm shipper'ları getirir
+        public async Task<ServiceResult<IEnumerable<Shipper>>> GetAllShippersAsync()
         {
             try
             {
-                return await _shipperRepository.GetAllShippersAsync();
+                var shippers = await _shipperRepository.GetAllShippersAsync(); // Repository'den tüm shipper'ları getirme işlemi
+                return ServiceResult<IEnumerable<Shipper>>.SuccessResult(shippers, "Tüm shipper'lar başarıyla getirildi."); // Başarı durumunda shipper'ları döndürür
             }
             catch (Exception ex)
             {
-                throw new Exception("Error fetching all shippers", ex);
+                return ServiceResult<IEnumerable<Shipper>>.FailureResult($"Shipper'lar getirilirken hata oluştu: {ex.Message}"); // Hata durumunda sonuç döndürür
             }
         }
     }
