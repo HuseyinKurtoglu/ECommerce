@@ -3,8 +3,6 @@ using ECommerce.DataAcces.Absract;
 using ECommerce.DataAcces.Models;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace ECommerce.Business.Concrete
@@ -18,70 +16,94 @@ namespace ECommerce.Business.Concrete
             _productRepository = productRepository;
         }
 
-        public async Task<IEnumerable<Product>> GetAllProductsAsync()
+        // Tüm ürünleri asenkron olarak getirir.
+        public async Task<ServiceResult<IEnumerable<Product>>> GetAllProductsAsync()
         {
             try
             {
-                return await _productRepository.GetAllProductsAsync();
+                // Ürünleri veri erişim katmanından alır.
+                var products = await _productRepository.GetAllProductsAsync();
+                // Başarıyla getirildiğinde ServiceResult ile döner.
+                return ServiceResult<IEnumerable<Product>>.SuccessResult(products, "Ürünler başarıyla getirildi.");
             }
             catch (Exception ex)
             {
-               
-                throw new Exception("Error retrieving products", ex);
+                // Hata durumunda ServiceResult ile hata mesajı döner.
+                return ServiceResult<IEnumerable<Product>>.FailureResult($"Ürünleri getirirken bir hata oluştu: {ex.Message}");
             }
         }
 
-        public async Task<Product> GetProductByIdAsync(int productId)
+        // Belirli bir ürünü asenkron olarak getirir.
+        public async Task<ServiceResult<Product>> GetProductByIdAsync(int productId)
         {
             try
             {
-                return await _productRepository.GetProductByIdAsync(productId);
+                // Ürünü veri erişim katmanından alır.
+                var product = await _productRepository.GetProductByIdAsync(productId);
+                if (product == null)
+                {
+                    // Ürün bulunamadığında hata mesajı döner.
+                    return ServiceResult<Product>.FailureResult("Ürün bulunamadı.");
+                }
+                // Ürün başarıyla getirildiğinde ServiceResult ile döner.
+                return ServiceResult<Product>.SuccessResult(product, "Ürün başarıyla getirildi.");
             }
             catch (Exception ex)
             {
-               
-                throw new Exception($"Error retrieving product with ID {productId}", ex);
+                // Hata durumunda ServiceResult ile hata mesajı döner.
+                return ServiceResult<Product>.FailureResult($"Ürünü getirirken bir hata oluştu: {ex.Message}");
             }
         }
 
-        public async Task<int> AddProductAsync(Product product)
+        // Yeni bir ürünü asenkron olarak ekler.
+        public async Task<ServiceResult<int>> AddProductAsync(Product product)
         {
             try
             {
-                return await _productRepository.AddProductAsync(product);
+                // Ürünü veri erişim katmanına ekler ve yeni ürün ID'sini alır.
+                var newProductId = await _productRepository.AddProductAsync(product);
+                // Başarıyla eklendiğinde ServiceResult ile yeni ürün ID'si döner.
+                return ServiceResult<int>.SuccessResult(newProductId, "Ürün başarıyla eklendi.");
             }
             catch (Exception ex)
             {
-                
-                throw new Exception("Error adding product", ex);
+                // Hata durumunda ServiceResult ile hata mesajı döner.
+                return ServiceResult<int>.FailureResult($"Ürün eklenirken bir hata oluştu: {ex.Message}");
             }
         }
 
-        public async Task<int> UpdateProductAsync(Product product)
+        // Mevcut bir ürünü asenkron olarak günceller.
+        public async Task<ServiceResult<int>> UpdateProductAsync(Product product)
         {
             try
             {
-                return await _productRepository.UpdateProductAsync(product);
+                // Ürünü veri erişim katmanında günceller ve güncellenmiş ürün ID'sini alır.
+                var updatedProductId = await _productRepository.UpdateProductAsync(product);
+                // Başarıyla güncellendiğinde ServiceResult ile güncellenmiş ürün ID'si döner.
+                return ServiceResult<int>.SuccessResult(updatedProductId, "Ürün başarıyla güncellendi.");
             }
             catch (Exception ex)
             {
-                
-                throw new Exception($"Error updating product with ID {product.ProductId}", ex);
+                // Hata durumunda ServiceResult ile hata mesajı döner.
+                return ServiceResult<int>.FailureResult($"Ürün güncellenirken bir hata oluştu: {ex.Message}");
             }
         }
 
-        public async Task<int> DeleteProductAsync(int productId, int deletedBy)
+        // Belirli bir ürünü asenkron olarak siler.
+        public async Task<ServiceResult<int>> DeleteProductAsync(int productId, int deletedBy)
         {
             try
             {
-                return await _productRepository.DeleteProductAsync(productId, deletedBy);
+                // Ürünü veri erişim katmanında siler ve silinmiş ürün ID'sini alır.
+                var deletedProductId = await _productRepository.DeleteProductAsync(productId, deletedBy);
+                // Başarıyla silindiğinde ServiceResult ile silinmiş ürün ID'si döner.
+                return ServiceResult<int>.SuccessResult(deletedProductId, "Ürün başarıyla silindi.");
             }
             catch (Exception ex)
             {
-               
-                throw new Exception($"Error deleting product with ID {productId}", ex);
+                // Hata durumunda ServiceResult ile hata mesajı döner.
+                return ServiceResult<int>.FailureResult($"Ürün silinirken bir hata oluştu: {ex.Message}");
             }
         }
     }
-
 }

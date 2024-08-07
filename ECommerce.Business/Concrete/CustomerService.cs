@@ -1,87 +1,119 @@
-﻿using ECommerce.Business.Absract;
+﻿// ECommerce iş mantığı katmanında müşteri servislerini tanımlar.
+using ECommerce.Business.Absract;
 using ECommerce.DataAcces.Absract;
 using ECommerce.DataAcces.Models;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace ECommerce.Business.Concrete
 {
+    // ICustomerService arayüzünü uygulayan CustomerService sınıfı
     public class CustomerService : ICustomerService
     {
+        // Veri erişim katmanında müşteri verileriyle işlem yapacak repository
         private readonly ICustomerRepository _customerRepository;
 
+        // CustomerService sınıfının yapıcı metodu, bağımlılık enjeksiyonunu sağlar
         public CustomerService(ICustomerRepository customerRepository)
         {
+            // Verilen repository örneğini sınıf değişkenine atar
             _customerRepository = customerRepository;
         }
 
-        public async Task<IEnumerable<Customer>> GetAllCustomersAsync()
+        // Tüm müşterileri asenkron olarak getirir
+        public async Task<ServiceResult<IEnumerable<Customer>>> GetAllCustomersAsync()
         {
             try
             {
-                return await _customerRepository.GetAllCustomersAsync();
+                // Repository'den tüm müşteri verilerini alır
+                var customers = await _customerRepository.GetAllCustomersAsync();
+                // Başarı durumunda müşterilerle birlikte başarılı bir ServiceResult döner
+                return ServiceResult<IEnumerable<Customer>>.SuccessResult(customers, "Müşteriler başarıyla getirildi.");
             }
             catch (Exception ex)
             {
-               
-                throw new Exception("Error retrieving customers", ex);
+                // Hata durumunda hata mesajıyla birlikte başarısız bir ServiceResult döner
+                return ServiceResult<IEnumerable<Customer>>.FailureResult($"Müşteriler getirilirken hata oluştu: {ex.Message}");
             }
         }
 
-        public async Task<Customer> GetCustomerByIdAsync(int customerId)
+        // Verilen müşteri ID'sine göre müşteriyi asenkron olarak getirir
+        public async Task<ServiceResult<Customer>> GetCustomerByIdAsync(int customerId)
         {
             try
             {
-                return await _customerRepository.GetCustomerByIdAsync(customerId);
+                // Repository'den müşteri verisini alır
+                var customer = await _customerRepository.GetCustomerByIdAsync(customerId);
+                // Müşteri bulunursa başarılı bir ServiceResult döner, bulunamazsa başarısız döner
+                return customer != null
+                    ? ServiceResult<Customer>.SuccessResult(customer, "Müşteri başarıyla getirildi.")
+                    : ServiceResult<Customer>.FailureResult("Müşteri bulunamadı.");
             }
             catch (Exception ex)
             {
-                
-                throw new Exception($"Error retrieving customer with ID {customerId}", ex);
+                // Hata durumunda hata mesajıyla birlikte başarısız bir ServiceResult döner
+                return ServiceResult<Customer>.FailureResult($"Müşteri getirilirken hata oluştu: {ex.Message}");
             }
         }
 
-        public async Task<int> AddCustomerAsync(Customer customer)
+        // Yeni bir müşteri ekler ve eklenen müşterinin ID'sini döner
+        public async Task<ServiceResult<int>> AddCustomerAsync(Customer customer)
         {
             try
             {
-                return await _customerRepository.AddCustomerAsync(customer);
+                // Repository'ye yeni müşteriyi ekler ve müşteri ID'sini alır
+                var customerId = await _customerRepository.AddCustomerAsync(customer);
+                // Başarı durumunda yeni müşteri ID'si ile başarılı bir ServiceResult döner
+                return ServiceResult<int>.SuccessResult(customerId, "Müşteri başarıyla eklendi.");
             }
             catch (Exception ex)
             {
-                
-                throw new Exception("Error adding customer", ex);
+                // Hata durumunda hata mesajıyla birlikte başarısız bir ServiceResult döner
+                return ServiceResult<int>.FailureResult($"Müşteri eklenirken hata oluştu: {ex.Message}");
             }
         }
 
-        public async Task<int> UpdateCustomerAsync(Customer customer)
+        // Var olan müşteriyi günceller
+        public async Task<ServiceResult<int>> UpdateCustomerAsync(int customerId, Customer customer)
         {
             try
             {
-                return await _customerRepository.UpdateCustomerAsync(customer);
+                // Gelen müşteri ID'sinin, güncellenmek istenen müşteri ID'siyle uyuşup uyuşmadığını kontrol eder
+                if (customerId != customer.CustomerId)
+                {
+                    // ID uyuşmazsa başarısız bir ServiceResult döner
+                    return ServiceResult<int>.FailureResult("Müşteri ID'si uyuşmuyor.");
+                }
+
+                // Repository'yi kullanarak müşteri verisini günceller ve etkilenen satır sayısını alır
+                var rowsAffected = await _customerRepository.UpdateCustomerAsync(customer);
+                // Güncelleme başarılıysa etkilenen satır sayısı ile başarılı bir ServiceResult döner
+                return rowsAffected > 0
+                    ? ServiceResult<int>.SuccessResult(rowsAffected, "Müşteri başarıyla güncellendi.")
+                    : ServiceResult<int>.FailureResult("Müşteri güncellenemedi.");
             }
             catch (Exception ex)
             {
-               
-                throw new Exception($"Error updating customer with ID {customer.CustomerId}", ex);
+                // Hata durumunda hata mesajıyla birlikte başarısız bir ServiceResult döner
+                return ServiceResult<int>.FailureResult($"Müşteri güncellenirken hata oluştu: {ex.Message}");
             }
         }
 
-        public async Task<int> DeleteCustomerAsync(int customerId, int deletedBy)
+        // Var olan müşteri kaydını siler
+        public async Task<ServiceResult<int>> DeleteCustomerAsync(int customerId, int deletedBy)
         {
             try
             {
-                return await _customerRepository.DeleteCustomerAsync(customerId, deletedBy);
+                // Repository'yi kullanarak müşteri kaydını siler ve etkilenen satır sayısını alır
+                var rowsAffected = await _customerRepository.DeleteCustomerAsync(customerId, deletedBy);
+                // Silme işlemi başarılıysa etkilenen satır sayısı ile başarılı bir ServiceResult döner
+                return rowsAffected > 0
+                    ? ServiceResult<int>.SuccessResult(rowsAffected, "Müşteri başarıyla silindi.")
+                    : ServiceResult<int>.FailureResult("Müşteri silinemedi.");
             }
             catch (Exception ex)
             {
-               
-                throw new Exception($"Error deleting customer with ID {customerId}", ex);
+                // Hata durumunda hata mesajıyla birlikte başarısız bir ServiceResult döner
+                return ServiceResult<int>.FailureResult($"Müşteri silinirken hata oluştu: {ex.Message}");
             }
         }
     }
-
 }

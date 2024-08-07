@@ -10,6 +10,7 @@ using ECommerce.Business.Concrete;
 using ECommerce.DataAcces.Models;
 using FluentValidation;
 using ECommerce.Entities;
+using ECommerce.DataAcces.Validator;
 
 
 public class Startup
@@ -41,7 +42,8 @@ public class Startup
         services.AddScoped<IValidator<User>, UserValidator>();
         services.AddScoped<IValidator<Order>, OrderValidator>();
         services.AddScoped<IValidator<OrderDetail>, OrderDetailValidator>();
-
+        services.AddScoped<IValidator<Product>, ProductValidator>();
+        services.AddScoped<IValidator<Customer>, CustomerValidator>();
         // İş servislerini ve repository'leri ekler.
         services.AddTransient<IOrderService, OrderService>();
         services.AddTransient<IOrderRepository, OrderRepository>();
