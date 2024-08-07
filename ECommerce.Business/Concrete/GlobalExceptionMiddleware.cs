@@ -3,7 +3,7 @@ using System;
 using System.Net;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
-
+/*
 public class ExceptionMiddleware
 {
     private readonly RequestDelegate _next;
@@ -36,3 +36,4 @@ public class ExceptionMiddleware
         return context.Response.WriteAsync(json);
     }
 }
+*/

@@ -1,19 +1,22 @@
-﻿using ECommerce.DataAcces.Models;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿using System.Collections.Generic;
 using System.Threading.Tasks;
+using ECommerce.DataAcces.Models;
+using ECommerce.Entities;
 
-namespace ECommerce.Business.Absract
+public interface IOrderService
 {
-    public interface IOrderService
-    {
-        Task<Order> GetOrderByIdAsync(int orderId);
-        Task<IEnumerable<Order>> GetAllOrdersAsync();
-        Task AddOrderAsync(Order order);
-        Task UpdateOrderAsync(Order order);
-        Task DeleteOrderAsync(int orderId);
-    }
+    // Belirli bir siparişi ID'sine göre asenkron olarak getirir.
+    Task<ServiceResult<Order>> GetOrderByIdAsync(int orderId);
 
+    // Tüm siparişleri asenkron olarak getirir.
+    Task<ServiceResult<IEnumerable<Order>>> GetAllOrdersAsync();
+
+    // Yeni bir siparişi asenkron olarak ekler.
+    Task<ServiceResult> AddOrderAsync(Order order);
+
+    // Var olan bir siparişi asenkron olarak günceller.
+    Task<ServiceResult> UpdateOrderAsync(Order order);
+
+    // Belirli bir siparişi ID'sine göre asenkron olarak siler.
+    Task<ServiceResult> DeleteOrderAsync(int orderId);
 }

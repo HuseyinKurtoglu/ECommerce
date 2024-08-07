@@ -5,7 +5,6 @@ using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace ECommerce.DataAcces.Concrete
@@ -14,18 +13,22 @@ namespace ECommerce.DataAcces.Concrete
     {
         private readonly IDbConnection _dbConnection;
 
+        // Constructor, IDbConnection bağımlılığını dependency injection yoluyla alır.
         public OrderRepository(IDbConnection dbConnection)
         {
             _dbConnection = dbConnection;
         }
 
+        // Belirli bir siparişi ID'sine göre asenkron olarak getirir.
         public async Task<Order> GetOrderByIdAsync(int orderId)
         {
+            // Sipariş bilgilerini getirir.
             var sql = "SELECT * FROM Orders WHERE OrderID = @OrderId AND IsDeleted = 0";
             var order = await _dbConnection.QueryFirstOrDefaultAsync<Order>(sql, new { OrderId = orderId });
 
             if (order != null)
             {
+                // Sipariş detaylarını getirir.
                 var orderDetailsSql = "SELECT * FROM OrderDetails WHERE OrderID = @OrderId AND IsDeleted = 0";
                 order.OrderDetails = (await _dbConnection.QueryAsync<OrderDetail>(orderDetailsSql, new { OrderId = orderId })).ToList();
             }
@@ -33,6 +36,7 @@ namespace ECommerce.DataAcces.Concrete
             return order;
         }
 
+        // Tüm siparişleri asenkron olarak getirir.
         public async Task<IEnumerable<Order>> GetAllOrdersAsync()
         {
             var sql = "SELECT * FROM Orders WHERE IsDeleted = 0";
@@ -40,6 +44,7 @@ namespace ECommerce.DataAcces.Concrete
             return orders;
         }
 
+        // Yeni bir siparişi asenkron olarak ekler.
         public async Task AddOrderAsync(Order order)
         {
             var sql = @"
@@ -47,9 +52,11 @@ namespace ECommerce.DataAcces.Concrete
             VALUES (@CustomerID, @OrderDate, @TotalAmount, @ShipperID, @StatusID, @CreatedDate, @CreatedBy, @UpdatedDate, @UpdatedBy, @DeletedDate, @DeletedBy, @IsDeleted, @IsActive);
             SELECT CAST(SCOPE_IDENTITY() as int)";
 
+            // Yeni siparişin ID'sini döner.
             var orderId = await _dbConnection.ExecuteScalarAsync<int>(sql, order);
             order.OrderId = orderId;
 
+            // Sipariş detaylarını ekler.
             foreach (var detail in order.OrderDetails)
             {
                 detail.OrderId = orderId;
@@ -57,6 +64,7 @@ namespace ECommerce.DataAcces.Concrete
             }
         }
 
+        // Var olan bir siparişi asenkron olarak günceller.
         public async Task UpdateOrderAsync(Order order)
         {
             var sql = @"
@@ -68,18 +76,21 @@ namespace ECommerce.DataAcces.Concrete
 
             await _dbConnection.ExecuteAsync(sql, order);
 
+            // Sipariş detaylarını günceller.
             foreach (var detail in order.OrderDetails)
             {
                 await UpdateOrderDetailAsync(detail);
             }
         }
 
+        // Belirli bir siparişi ID'sine göre asenkron olarak siler (IsDeleted bayrağını set eder).
         public async Task DeleteOrderAsync(int orderId)
         {
             var sql = "UPDATE Orders SET IsDeleted = 1 WHERE OrderID = @OrderId";
             await _dbConnection.ExecuteAsync(sql, new { OrderId = orderId });
         }
 
+        // Sipariş detayını asenkron olarak ekler.
         private async Task AddOrderDetailAsync(OrderDetail orderDetail)
         {
             var sql = @"
@@ -89,6 +100,7 @@ namespace ECommerce.DataAcces.Concrete
             await _dbConnection.ExecuteAsync(sql, orderDetail);
         }
 
+        // Sipariş detayını asenkron olarak günceller.
         private async Task UpdateOrderDetailAsync(OrderDetail orderDetail)
         {
             var sql = @"
@@ -100,5 +112,4 @@ namespace ECommerce.DataAcces.Concrete
             await _dbConnection.ExecuteAsync(sql, orderDetail);
         }
     }
-
 }

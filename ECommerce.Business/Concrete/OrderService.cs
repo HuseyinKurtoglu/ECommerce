@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using ECommerce.Business.Absract;
 using ECommerce.DataAcces.Absract;
@@ -14,6 +15,7 @@ public class OrderService : IOrderService
     private readonly IValidator<Order> _orderValidator;
     private readonly IValidator<OrderDetail> _orderDetailValidator;
 
+    // Constructor, gerekli bağımlılıkları dependency injection yoluyla alır.
     public OrderService(IOrderRepository orderRepository, IValidator<Order> orderValidator, IValidator<OrderDetail> orderDetailValidator)
     {
         _orderRepository = orderRepository;
@@ -21,60 +23,100 @@ public class OrderService : IOrderService
         _orderDetailValidator = orderDetailValidator;
     }
 
-    public async Task<Order> GetOrderByIdAsync(int orderId)
+    // Belirli bir siparişi ID'sine göre asenkron olarak getirir.
+    public async Task<ServiceResult<Order>> GetOrderByIdAsync(int orderId)
     {
-        return await _orderRepository.GetOrderByIdAsync(orderId);
+        try
+        {
+            var order = await _orderRepository.GetOrderByIdAsync(orderId);
+            if (order == null)
+            {
+                // Sipariş bulunamadığında hata mesajı döner.
+                return ServiceResult<Order>.FailureResult("Sipariş bulunamadı.");
+            }
+            // Sipariş başarıyla alındığında başarı mesajı döner.
+            return ServiceResult<Order>.SuccessResult(order, "Sipariş başarıyla alındı.");
+        }
+        catch (Exception ex)
+        {
+            // Hata durumunda hata mesajı döner.
+            return ServiceResult<Order>.FailureResult($"Sipariş alınırken hata oluştu: {ex.Message}");
+        }
     }
 
-    public async Task<IEnumerable<Order>> GetAllOrdersAsync()
+    // Tüm siparişleri asenkron olarak getirir.
+    public async Task<ServiceResult<IEnumerable<Order>>> GetAllOrdersAsync()
     {
-        return await _orderRepository.GetAllOrdersAsync();
+        try
+        {
+            var orders = await _orderRepository.GetAllOrdersAsync();
+            // Tüm siparişler başarıyla alındığında başarı mesajı döner.
+            return ServiceResult<IEnumerable<Order>>.SuccessResult(orders, "Tüm siparişler başarıyla alındı.");
+        }
+        catch (Exception ex)
+        {
+            // Hata durumunda hata mesajı döner.
+            return ServiceResult<IEnumerable<Order>>.FailureResult($"Siparişler alınırken hata oluştu: {ex.Message}");
+        }
     }
 
-    public async Task AddOrderAsync(Order order)
+    // Yeni bir siparişi asenkron olarak ekler.
+    public async Task<ServiceResult> AddOrderAsync(Order order)
     {
-        await ValidateAndExecuteAsync(order, () => _orderRepository.AddOrderAsync(order));
+        return await ValidateAndExecuteAsync(order, () => _orderRepository.AddOrderAsync(order), "Sipariş başarıyla eklendi.");
     }
 
-    public async Task UpdateOrderAsync(Order order)
+    // Var olan bir siparişi asenkron olarak günceller.
+    public async Task<ServiceResult> UpdateOrderAsync(Order order)
     {
-        await ValidateAndExecuteAsync(order, () => _orderRepository.UpdateOrderAsync(order));
+        return await ValidateAndExecuteAsync(order, () => _orderRepository.UpdateOrderAsync(order), "Sipariş başarıyla güncellendi.");
     }
 
-    public async Task DeleteOrderAsync(int orderId)
+    // Belirli bir siparişi ID'sine göre asenkron olarak siler.
+    public async Task<ServiceResult> DeleteOrderAsync(int orderId)
     {
-        await ExecuteAsync(() => _orderRepository.DeleteOrderAsync(orderId));
+        return await ExecuteAsync(() => _orderRepository.DeleteOrderAsync(orderId), "Sipariş başarıyla silindi.");
     }
 
-    private async Task ValidateAndExecuteAsync(Order order, Func<Task> action)
+    // Siparişi doğrulayıp işlemi gerçekleştiren asenkron bir yardımcı yöntemdir.
+    private async Task<ServiceResult> ValidateAndExecuteAsync(Order order, Func<Task> action, string successMessage)
     {
+        // Siparişin doğruluğunu kontrol eder.
         ValidationResult result = await _orderValidator.ValidateAsync(order);
         if (!result.IsValid)
         {
-            throw new ValidationException(result.Errors);
+            // Doğrulama hataları varsa hata mesajı döner.
+            return ServiceResult.FailureResult(string.Join("; ", result.Errors.Select(e => e.ErrorMessage)));
         }
 
+        // Sipariş detaylarını doğrular.
         foreach (var detail in order.OrderDetails)
         {
             ValidationResult detailResult = await _orderDetailValidator.ValidateAsync(detail);
             if (!detailResult.IsValid)
             {
-                throw new ValidationException(detailResult.Errors);
+                // Detay doğrulama hataları varsa hata mesajı döner.
+                return ServiceResult.FailureResult(string.Join("; ", detailResult.Errors.Select(e => e.ErrorMessage)));
             }
         }
 
-        await ExecuteAsync(action);
+        // Doğrulama başarılıysa işlemi gerçekleştirir.
+        return await ExecuteAsync(action, successMessage);
     }
 
-    private async Task ExecuteAsync(Func<Task> action)
+    // Verilen işlemi asenkron olarak gerçekleştirir ve başarı mesajı döner.
+    private async Task<ServiceResult> ExecuteAsync(Func<Task> action, string successMessage)
     {
         try
         {
             await action();
+            // İşlem başarılıysa başarı mesajı döner.
+            return ServiceResult.SuccessResult(successMessage);
         }
         catch (Exception ex)
         {
-            throw new Exception("An error occurred while processing your request.", ex);
+            // İşlem sırasında hata oluşursa hata mesajı döner.
+            return ServiceResult.FailureResult($"İşlem gerçekleştirilirken hata oluştu: {ex.Message}");
         }
     }
 }

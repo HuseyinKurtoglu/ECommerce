@@ -1,50 +1,47 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using ECommerce.Entities;
+using System.Threading.Tasks;
+using ECommerce.Business.Absract;
 
-namespace ECommerce.API.Controller
+[ApiController]
+[Route("api/[controller]")]
+public class UserController : ControllerBase
 {
-    [Route("api/[controller]")]
-    [ApiController]
-    public class UsersController : ControllerBase
+    private readonly IUserService _userService;
+
+    // Constructor, IUserService bağımlılığını dependency injection yoluyla alır.
+    public UserController(IUserService userService)
     {
-        private readonly IUserService _userService;
+        _userService = userService;
+    }
 
-        public UsersController(IUserService userService)
-        {
-            _userService = userService;
-        }
+    // Belirli bir kullanıcıyı ID'sine göre getirir.
+    [HttpGet("{id}")]
+    public IActionResult GetUserById(int id)
+    {
+        // Kullanıcı servisini kullanarak kullanıcıyı getirir.
+        var result = _userService.GetUserById(id);
+        // Sonuç başarılıysa kullanıcıyı döner, aksi takdirde hata mesajı döner.
+        return result.Success ? Ok(result) : BadRequest(result.Message);
+    }
 
-        [HttpGet("{id}")]
-        public IActionResult Get(int id)
-        {
-            var result = _userService.GetUserById(id);
-            if (!result.Success)
-            {
-                return NotFound(result.Message);
-            }
-            return Ok(result.Data);
-        }
+    // Yeni bir kullanıcı ekler.
+    [HttpPost]
+    public IActionResult AddUser([FromBody] User user)
+    {
+        // Kullanıcı servisini kullanarak yeni kullanıcıyı ekler.
+        var result = _userService.AddUser(user);
+        // Sonuç başarılıysa eklenen kullanıcıyı döner, aksi takdirde hata mesajı döner.
+        return result.Success ? Ok(result) : BadRequest(result.Message);
+    }
 
-        [HttpPost]
-        public IActionResult Post([FromBody] User user)
-        {
-            var result = _userService.AddUser(user);
-            if (!result.Success)
-            {
-                return BadRequest(result.Message);
-            }
-            return CreatedAtAction(nameof(Get), new { id = result.Data.UserID }, result.Data);
-        }
-
-        [HttpPut("{id}")]
-        public IActionResult Put(int id, [FromBody] User user)
-        {
-            var result = _userService.UpdateUser(id, user);
-            if (!result.Success)
-            {
-                return BadRequest(result.Message);
-            }
-            return Ok(result.Data);
-        }
+    // Var olan bir kullanıcıyı günceller.
+    [HttpPut("{id}")]
+    public IActionResult UpdateUser(int id, [FromBody] User user)
+    {
+        // Kullanıcı servisini kullanarak mevcut kullanıcıyı günceller.
+        var result = _userService.UpdateUser(id, user);
+        // Sonuç başarılıysa güncellenmiş kullanıcıyı döner, aksi takdirde hata mesajı döner.
+        return result.Success ? Ok(result) : BadRequest(result.Message);
     }
 }

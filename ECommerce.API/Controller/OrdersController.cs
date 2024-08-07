@@ -11,43 +11,59 @@ public class OrderController : ControllerBase
 {
     private readonly IOrderService _orderService;
 
+    // Constructor, OrderService'i dependency injection yoluyla alır.
     public OrderController(IOrderService orderService)
     {
         _orderService = orderService;
     }
 
+    // Belirli bir siparişi ID'sine göre alır.
     [HttpGet("{id}")]
     public async Task<IActionResult> GetOrderById(int id)
     {
-        var order = await _orderService.GetOrderByIdAsync(id);
-        return Ok(order);
+        var result = await _orderService.GetOrderByIdAsync(id);
+
+        // İşlem başarılıysa 200 OK, başarısızsa 400 Bad Request döner.
+        return result.Success ? Ok(result.Message) : BadRequest(result.Message);
     }
 
+    // Tüm siparişleri alır.
     [HttpGet]
     public async Task<IActionResult> GetAllOrders()
     {
-        var orders = await _orderService.GetAllOrdersAsync();
-        return Ok(orders);
+        var result = await _orderService.GetAllOrdersAsync();
+
+        // İşlem başarılıysa 200 OK, başarısızsa 400 Bad Request döner.
+        return result.Success ? Ok(result.Message) : BadRequest(result.Message);
     }
 
+    // Yeni bir sipariş ekler.
     [HttpPost]
     public async Task<IActionResult> AddOrder([FromBody] Order order)
     {
-        await _orderService.AddOrderAsync(order);
-        return Ok();
+        var result = await _orderService.AddOrderAsync(order);
+
+        // İşlem başarılıysa 200 OK, başarısızsa 400 Bad Request döner.
+        return result.Success ? Ok(result.Message) : BadRequest(result.Message);
     }
 
+    // Var olan bir siparişi günceller.
     [HttpPut]
     public async Task<IActionResult> UpdateOrder([FromBody] Order order)
     {
-        await _orderService.UpdateOrderAsync(order);
-        return Ok();
+        var result = await _orderService.UpdateOrderAsync(order);
+
+        // İşlem başarılıysa 200 OK, başarısızsa 400 Bad Request döner.
+        return result.Success ? Ok(result.Message) : BadRequest(result.Message);
     }
 
+    // Belirli bir siparişi ID'sine göre siler.
     [HttpDelete("{id}")]
     public async Task<IActionResult> DeleteOrder(int id)
     {
-        await _orderService.DeleteOrderAsync(id);
-        return Ok();
+        var result = await _orderService.DeleteOrderAsync(id);
+
+        // İşlem başarılıysa 200 OK, başarısızsa 400 Bad Request döner.
+        return result.Success ? Ok(result.Message) : BadRequest(result.Message);
     }
 }
