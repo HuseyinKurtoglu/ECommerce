@@ -13,6 +13,8 @@ using ECommerce.Entities;
 using ECommerce.DataAcces.Validator;
 using ECommerce.DataAcces.Validator.ECommerce.DataAcces.Validator;
 using ECommerce.Business.ValidationRules;
+using ECommerce.DataAcces.Concrete.Dapper;
+using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 
 public class Startup
@@ -50,6 +52,7 @@ public class Startup
         services.AddScoped<IValidator<OrderStatus>, OrderStatusValidator>();
         services.AddScoped<IValidator<ProductReview>, ProductReviewValidator>();
         services.AddScoped<IValidator<Category>, CategoryValidator>();
+        services.AddScoped<IValidator<Payment>, PaymentValidator>();
         // İş servislerini ve repository'leri ekler.
         services.AddTransient<IOrderService, OrderService>();
         services.AddTransient<IOrderRepository, OrderRepository>();
@@ -67,6 +70,8 @@ public class Startup
         services.AddScoped<IProductReviewService, ProductReviewService>();
         services.AddScoped<ICategoryRepository, CategoryRepository>();
         services.AddScoped<ICategoryService, CategoryService>();
+        services.AddScoped<IPaymentRepository, PaymentRepository>();
+        services.AddScoped<IPaymentService, PaymentService>();
 
         // Veritabanı bağlantısını Scoped olarak ekler.
         services.AddScoped<IDbConnection>(sp => new SqlConnection(Configuration.GetConnectionString("DefaultConnection")));
