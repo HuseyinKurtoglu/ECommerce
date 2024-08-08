@@ -22,7 +22,7 @@ namespace ECommerce.API.Controller
         {
             var result = await _productService.GetAllProductsAsync();
             // Başarılı ise ürünleri döndür, aksi halde hata mesajı döndür
-            return result.Success ? Ok(result.Data) : BadRequest(result.Message);
+            return StatusCode((int)result.StatusCode, result);
         }
 
         // Belirli bir ürünü ID ile almak için GET isteği
@@ -30,8 +30,8 @@ namespace ECommerce.API.Controller
         public async Task<IActionResult> GetProductById(int id)
         {
             var result = await _productService.GetProductByIdAsync(id);
-            // Başarılı ise ürünü döndür, aksi halde 404 Not Found hata kodu döndür
-            return result.Success ? Ok(result.Data) : NotFound(result.Message);
+         
+            return StatusCode((int)result.StatusCode, result);
         }
 
         // Yeni bir ürün eklemek için POST isteği
@@ -39,8 +39,8 @@ namespace ECommerce.API.Controller
         public async Task<IActionResult> AddProduct([FromBody] Product product)
         {
             var result = await _productService.AddProductAsync(product);
-            // Başarılı ise ürünü oluşturulan ID ile döndür, aksi halde hata mesajı döndür
-            return result.Success ? CreatedAtAction(nameof(GetProductById), new { id = result.Data }, result.Data) : BadRequest(result.Message);
+            
+            return StatusCode((int)result.StatusCode, result);
         }
 
         // Belirli bir ürünü güncellemek için PUT isteği
@@ -50,8 +50,8 @@ namespace ECommerce.API.Controller
             // Güncellenmek istenen ürünün ID'si ile URL'deki ID'nin eşleşip eşleşmediğini kontrol et
             if (id != product.ProductId) return BadRequest("ID does not match.");
             var result = await _productService.UpdateProductAsync(product);
-            // Başarılı ise hiçbir içerik döndürme, aksi halde hata mesajı döndür
-            return result.Success ? NoContent() : BadRequest(result.Message);
+         
+            return StatusCode((int)result.StatusCode, result);
         }
 
         // Belirli bir ürünü silmek için DELETE isteği
@@ -59,8 +59,8 @@ namespace ECommerce.API.Controller
         public async Task<IActionResult> DeleteProduct(int id, [FromQuery] int deletedBy)
         {
             var result = await _productService.DeleteProductAsync(id, deletedBy);
-            // Başarılı ise hiçbir içerik döndürme, aksi halde hata mesajı döndür
-            return result.Success ? NoContent() : BadRequest(result.Message);
+          
+            return StatusCode((int)result.StatusCode, result);
         }
     }
 }

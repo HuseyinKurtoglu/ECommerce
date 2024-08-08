@@ -3,8 +3,8 @@ using ECommerce.DataAcces.Absract;
 using ECommerce.DataAcces.Models;
 using System;
 using System.Collections.Generic;
+using System.Net;
 using System.Threading.Tasks;
-
 
 namespace ECommerce.Business.Concrete
 {
@@ -23,11 +23,11 @@ namespace ECommerce.Business.Concrete
             try
             {
                 var result = await _shipperRepository.AddShipperAsync(shipper); // Repository'den yeni shipper ekleme işlemi
-                return ServiceResult<int>.SuccessResult(result, "Shipper başarıyla eklendi."); // Başarı durumunda sonuç döndürür
+                return ServiceResult<int>.SuccessResult(result, "Shipper başarıyla eklendi.", HttpStatusCode.Created); // Başarı durumunda sonuç ve HTTP 201 durumu döndürür
             }
             catch (Exception ex)
             {
-                return ServiceResult<int>.FailureResult($"Shipper eklenirken hata oluştu: {ex.Message}"); // Hata durumunda sonuç döndürür
+                return ServiceResult<int>.FailureResult($"Shipper eklenirken hata oluştu: {ex.Message}", HttpStatusCode.NotAcceptable); // Hata durumunda sonuç ve HTTP 406 durumu döndürür
             }
         }
 
@@ -37,11 +37,11 @@ namespace ECommerce.Business.Concrete
             try
             {
                 var result = await _shipperRepository.UpdateShipperAsync(shipper); // Repository'den shipper güncelleme işlemi
-                return ServiceResult<int>.SuccessResult(result, "Shipper başarıyla güncellendi."); // Başarı durumunda sonuç döndürür
+                return ServiceResult<int>.SuccessResult(result, "Shipper başarıyla güncellendi.", HttpStatusCode.OK); // Başarı durumunda sonuç ve HTTP 200 durumu döndürür
             }
             catch (Exception ex)
             {
-                return ServiceResult<int>.FailureResult($"Shipper güncellenirken hata oluştu: {ex.Message}"); // Hata durumunda sonuç döndürür
+                return ServiceResult<int>.FailureResult($"Shipper güncellenirken hata oluştu: {ex.Message}", HttpStatusCode.NotAcceptable); // Hata durumunda sonuç ve HTTP 406 durumu döndürür
             }
         }
 
@@ -51,11 +51,11 @@ namespace ECommerce.Business.Concrete
             try
             {
                 var result = await _shipperRepository.DeleteShipperAsync(shipperId); // Repository'den shipper silme işlemi
-                return ServiceResult<int>.SuccessResult(result, "Shipper başarıyla silindi."); // Başarı durumunda sonuç döndürür
+                return ServiceResult<int>.SuccessResult(result, "Shipper başarıyla silindi.", HttpStatusCode.OK); // Başarı durumunda sonuç ve HTTP 200 durumu döndürür
             }
             catch (Exception ex)
             {
-                return ServiceResult<int>.FailureResult($"Shipper silinirken hata oluştu: {ex.Message}"); // Hata durumunda sonuç döndürür
+                return ServiceResult<int>.FailureResult($"Shipper silinirken hata oluştu: {ex.Message}", HttpStatusCode.NotAcceptable); // Hata durumunda sonuç ve HTTP 406 durumu döndürür
             }
         }
 
@@ -66,12 +66,12 @@ namespace ECommerce.Business.Concrete
             {
                 var shipper = await _shipperRepository.GetShipperByIdAsync(shipperId); // Repository'den shipper getirme işlemi
                 return shipper != null
-                    ? ServiceResult<Shipper>.SuccessResult(shipper, "Shipper başarıyla getirildi.") // Başarı durumunda shipper'ı döndürür
-                    : ServiceResult<Shipper>.FailureResult("Shipper bulunamadı."); // Şirket bulunamadıysa hata döndürür
+                    ? ServiceResult<Shipper>.SuccessResult(shipper, "Shipper başarıyla getirildi.", HttpStatusCode.OK) // Başarı durumunda shipper'ı ve HTTP 200 durumunu döndürür
+                    : ServiceResult<Shipper>.FailureResult("Shipper bulunamadı.", HttpStatusCode.NotFound); // Shipper bulunamadıysa hata ve HTTP 404 durumu döndürür
             }
             catch (Exception ex)
             {
-                return ServiceResult<Shipper>.FailureResult($"Shipper getirilirken hata oluştu: {ex.Message}"); // Hata durumunda sonuç döndürür
+                return ServiceResult<Shipper>.FailureResult($"Shipper getirilirken hata oluştu: {ex.Message}", HttpStatusCode.NotAcceptable); // Hata durumunda sonuç ve HTTP 406 durumu döndürür
             }
         }
 
@@ -81,11 +81,11 @@ namespace ECommerce.Business.Concrete
             try
             {
                 var shippers = await _shipperRepository.GetAllShippersAsync(); // Repository'den tüm shipper'ları getirme işlemi
-                return ServiceResult<IEnumerable<Shipper>>.SuccessResult(shippers, "Tüm shipper'lar başarıyla getirildi."); // Başarı durumunda shipper'ları döndürür
+                return ServiceResult<IEnumerable<Shipper>>.SuccessResult(shippers, "Tüm shipper'lar başarıyla getirildi.", HttpStatusCode.OK); // Başarı durumunda shipper'ları ve HTTP 200 durumunu döndürür
             }
             catch (Exception ex)
             {
-                return ServiceResult<IEnumerable<Shipper>>.FailureResult($"Shipper'lar getirilirken hata oluştu: {ex.Message}"); // Hata durumunda sonuç döndürür
+                return ServiceResult<IEnumerable<Shipper>>.FailureResult($"Shipper'lar getirilirken hata oluştu: {ex.Message}", HttpStatusCode.NotAcceptable); // Hata durumunda sonuç ve HTTP 406 durumu döndürür
             }
         }
     }

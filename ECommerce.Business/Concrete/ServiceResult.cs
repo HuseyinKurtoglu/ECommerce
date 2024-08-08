@@ -1,30 +1,41 @@
-﻿public class ServiceResult
+﻿using System.Net;
+
+namespace ECommerce.Business
 {
-    // İşlemin başarılı olup olmadığını belirten özellik.
-    public bool Success { get; protected set; }
+    public class ServiceResult
+    {
+        public bool Success { get; set; } // İşlemin başarılı olup olmadığını belirtir
+        public string Message { get; set; } // İşlem hakkında bilgi veren mesaj
+        public HttpStatusCode StatusCode { get; set; } // HTTP yanıt kodu
 
-    // İşlemle ilgili açıklayıcı mesaj.
-    public string Message { get; protected set; }
+        // Başarı durumunda kullanılacak ServiceResult nesnesi oluşturur
+        public static ServiceResult SuccessResult(string message, HttpStatusCode statusCode = HttpStatusCode.OK)
+        {
+            return new ServiceResult { Success = true, Message = message, StatusCode = statusCode };
+        }
 
-    // Başarıyla sonuçlanan bir işlem için yeni bir `ServiceResult` oluşturur.
-    public static ServiceResult SuccessResult(string message) =>
-        new ServiceResult { Success = true, Message = message };
+        // Başarısızlık durumunda kullanılacak ServiceResult nesnesi oluşturur
+        public static ServiceResult FailureResult(string message, HttpStatusCode statusCode = HttpStatusCode.BadRequest)
+        {
+            return new ServiceResult { Success = false, Message = message, StatusCode = statusCode };
+        }
+    }
 
-    // Başarısız bir işlem için yeni bir `ServiceResult` oluşturur.
-    public static ServiceResult FailureResult(string message) =>
-        new ServiceResult { Success = false, Message = message };
-}
+    // Genel ServiceResult sınıfından türetilmiş ve veri taşıyan versiyonu
+    public class ServiceResult<T> : ServiceResult
+    {
+        public T Data { get; set; } // İşlem sonucunda döndürülecek veri
 
-public class ServiceResult<T> : ServiceResult
-{
-    // İşlem sonucunda döndürülen veri.
-    public T Data { get; protected set; }
+        // Başarı durumunda kullanılacak ServiceResult<T> nesnesi oluşturur
+        public static ServiceResult<T> SuccessResult(T data, string message, HttpStatusCode statusCode = HttpStatusCode.OK)
+        {
+            return new ServiceResult<T> { Data = data, Success = true, Message = message, StatusCode = statusCode };
+        }
 
-    // Başarıyla sonuçlanan bir işlem için yeni bir `ServiceResult<T>` oluşturur.
-    public static ServiceResult<T> SuccessResult(T data, string message) =>
-        new ServiceResult<T> { Success = true, Data = data, Message = message };
-
-    // Başarısız bir işlem için yeni bir `ServiceResult<T>` oluşturur.
-    public static ServiceResult<T> FailureResult(string message) =>
-        new ServiceResult<T> { Success = false, Message = message };
+        // Başarısızlık durumunda kullanılacak ServiceResult<T> nesnesi oluşturur
+        public static ServiceResult<T> FailureResult(string message, HttpStatusCode statusCode = HttpStatusCode.BadRequest)
+        {
+            return new ServiceResult<T> { Success = false, Message = message, StatusCode = statusCode };
+        }
+    }
 }

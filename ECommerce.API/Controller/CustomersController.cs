@@ -24,7 +24,7 @@ namespace ECommerce.API.Controller
         public async Task<IActionResult> GetAllCustomers()
         {
             var result = await _customerService.GetAllCustomersAsync(); // Servis aracılığıyla tüm müşterileri getirir
-            return result.Success ? Ok(result.Data) : BadRequest(result.Message); // Sonuç başarılıysa HTTP 200, başarısızsa HTTP 400 döner
+            return StatusCode((int)result.StatusCode, result);
         }
 
         // ID ile müşteri getirir
@@ -32,7 +32,7 @@ namespace ECommerce.API.Controller
         public async Task<IActionResult> GetCustomerById(int id)
         {
             var result = await _customerService.GetCustomerByIdAsync(id); // Servis aracılığıyla belirli müşteri ID'sini getirir
-            return result.Success ? Ok(result.Data) : NotFound(result.Message); // Sonuç başarılıysa HTTP 200, müşteri bulunamazsa HTTP 404 döner
+            return StatusCode((int)result.StatusCode, result);
         }
 
         // Yeni müşteri ekler
@@ -40,7 +40,7 @@ namespace ECommerce.API.Controller
         public async Task<IActionResult> AddCustomer([FromBody] Customer customer)
         {
             var result = await _customerService.AddCustomerAsync(customer); // Servis aracılığıyla yeni müşteri ekler
-            return result.Success ? CreatedAtAction(nameof(GetCustomerById), new { id = result.Data }, result.Data) : BadRequest(result.Message); // Başarıyla eklenirse HTTP 201 ve eklenen müşteri bilgilerini döner, başarısızsa HTTP 400 döner
+            return StatusCode((int)result.StatusCode, result);
         }
 
         // Müşteri bilgilerini günceller
@@ -49,7 +49,7 @@ namespace ECommerce.API.Controller
         {
             if (id != customer.CustomerId) return BadRequest("ID uyuşmuyor"); // ID'ler uyuşmazsa HTTP 400 döner
             var result = await _customerService.UpdateCustomerAsync(id, customer); // Servis aracılığıyla müşteri bilgilerini günceller
-            return result.Success ? NoContent() : BadRequest(result.Message); // Başarıyla güncellenirse HTTP 204 döner, başarısızsa HTTP 400 döner
+            return StatusCode((int)result.StatusCode, result);
         }
 
         // Müşteri siler
@@ -57,7 +57,7 @@ namespace ECommerce.API.Controller
         public async Task<IActionResult> DeleteCustomer(int id, [FromQuery] int deletedBy)
         {
             var result = await _customerService.DeleteCustomerAsync(id, deletedBy); // Servis aracılığıyla müşteri siler
-            return result.Success ? NoContent() : BadRequest(result.Message); // Başarıyla silinirse HTTP 204 döner, başarısızsa HTTP 400 döner
+            return StatusCode((int)result.StatusCode, result);
         }
     }
 }

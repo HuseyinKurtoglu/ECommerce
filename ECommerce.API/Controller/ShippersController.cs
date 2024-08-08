@@ -24,8 +24,7 @@ namespace ECommerce.API.Controller
         {
             // Servis üzerinden shipper ekleme işlemi gerçekleştirilir
             var result = await _shipperService.AddShipperAsync(shipper);
-            // İşlem başarılıysa 200 OK döndürülür, aksi takdirde 400 Bad Request döndürülür
-            return result.Success ? Ok(result) : BadRequest(result.Message);
+            return StatusCode((int)result.StatusCode, result);
         }
 
         // Var olan bir shipper'ı günceller
@@ -34,8 +33,7 @@ namespace ECommerce.API.Controller
         {
             // Servis üzerinden shipper güncelleme işlemi gerçekleştirilir
             var result = await _shipperService.UpdateShipperAsync(shipper);
-            // İşlem başarılıysa 200 OK döndürülür, aksi takdirde 400 Bad Request döndürülür
-            return result.Success ? Ok(result) : BadRequest(result.Message);
+            return StatusCode((int)result.StatusCode, result);
         }
 
         // Bir shipper'ı ID ile siler
@@ -44,8 +42,7 @@ namespace ECommerce.API.Controller
         {
             // Servis üzerinden shipper silme işlemi gerçekleştirilir
             var result = await _shipperService.DeleteShipperAsync(id);
-            // İşlem başarılıysa 200 OK döndürülür, aksi takdirde 400 Bad Request döndürülür
-            return result.Success ? Ok(result) : BadRequest(result.Message);
+            return StatusCode((int)result.StatusCode, result);
         }
 
         // ID ile bir shipper'ı getirir
@@ -54,8 +51,7 @@ namespace ECommerce.API.Controller
         {
             // Servis üzerinden shipper getirme işlemi gerçekleştirilir
             var result = await _shipperService.GetShipperByIdAsync(id);
-            // İşlem başarılıysa 200 OK döndürülür, eğer shipper bulunamazsa 404 Not Found döndürülür
-            return result.Success ? Ok(result) : NotFound(result.Message);
+            return StatusCode((int)result.StatusCode, result);
         }
 
         // Tüm shipper'ları getirir
@@ -64,8 +60,7 @@ namespace ECommerce.API.Controller
         {
             // Servis üzerinden tüm shipper'ları getirme işlemi gerçekleştirilir
             var result = await _shipperService.GetAllShippersAsync();
-            // İşlem başarılıysa 200 OK döndürülür, aksi takdirde 400 Bad Request döndürülür
-            return result.Success ? Ok(result) : BadRequest(result.Message);
+            return StatusCode((int)result.StatusCode, result);
         }
     }
 }

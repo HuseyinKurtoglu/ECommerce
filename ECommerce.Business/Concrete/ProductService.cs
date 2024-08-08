@@ -3,6 +3,7 @@ using ECommerce.DataAcces.Absract;
 using ECommerce.DataAcces.Models;
 using System;
 using System.Collections.Generic;
+using System.Net;
 using System.Threading.Tasks;
 
 namespace ECommerce.Business.Concrete
@@ -24,12 +25,13 @@ namespace ECommerce.Business.Concrete
                 // Ürünleri veri erişim katmanından alır.
                 var products = await _productRepository.GetAllProductsAsync();
                 // Başarıyla getirildiğinde ServiceResult ile döner.
-                return ServiceResult<IEnumerable<Product>>.SuccessResult(products, "Ürünler başarıyla getirildi.");
+                // HTTP 200 (OK) durumu ile döner.
+                return ServiceResult<IEnumerable<Product>>.SuccessResult(products, "Ürünler başarıyla getirildi.", HttpStatusCode.OK);
             }
             catch (Exception ex)
             {
                 // Hata durumunda ServiceResult ile hata mesajı döner.
-                return ServiceResult<IEnumerable<Product>>.FailureResult($"Ürünleri getirirken bir hata oluştu: {ex.Message}");
+                return ServiceResult<IEnumerable<Product>>.FailureResult($"Ürünleri getirirken bir hata oluştu: {ex.Message}", HttpStatusCode.NotAcceptable);
             }
         }
 
@@ -43,15 +45,17 @@ namespace ECommerce.Business.Concrete
                 if (product == null)
                 {
                     // Ürün bulunamadığında hata mesajı döner.
-                    return ServiceResult<Product>.FailureResult("Ürün bulunamadı.");
+                    // HTTP 404 (Not Found) durumu ile döner.
+                    return ServiceResult<Product>.FailureResult("Ürün bulunamadı.", HttpStatusCode.NotFound);
                 }
                 // Ürün başarıyla getirildiğinde ServiceResult ile döner.
-                return ServiceResult<Product>.SuccessResult(product, "Ürün başarıyla getirildi.");
+                // HTTP 200 (OK) durumu ile döner.
+                return ServiceResult<Product>.SuccessResult(product, "Ürün başarıyla getirildi.", HttpStatusCode.OK);
             }
             catch (Exception ex)
             {
                 // Hata durumunda ServiceResult ile hata mesajı döner.
-                return ServiceResult<Product>.FailureResult($"Ürünü getirirken bir hata oluştu: {ex.Message}");
+                return ServiceResult<Product>.FailureResult($"Ürünü getirirken bir hata oluştu: {ex.Message}", HttpStatusCode.NotAcceptable);
             }
         }
 
@@ -63,12 +67,13 @@ namespace ECommerce.Business.Concrete
                 // Ürünü veri erişim katmanına ekler ve yeni ürün ID'sini alır.
                 var newProductId = await _productRepository.AddProductAsync(product);
                 // Başarıyla eklendiğinde ServiceResult ile yeni ürün ID'si döner.
-                return ServiceResult<int>.SuccessResult(newProductId, "Ürün başarıyla eklendi.");
+                // HTTP 201 (Created) durumu ile döner.
+                return ServiceResult<int>.SuccessResult(newProductId, "Ürün başarıyla eklendi.", HttpStatusCode.Created);
             }
             catch (Exception ex)
             {
                 // Hata durumunda ServiceResult ile hata mesajı döner.
-                return ServiceResult<int>.FailureResult($"Ürün eklenirken bir hata oluştu: {ex.Message}");
+                return ServiceResult<int>.FailureResult($"Ürün eklenirken bir hata oluştu: {ex.Message}", HttpStatusCode.NotAcceptable);
             }
         }
 
@@ -80,12 +85,14 @@ namespace ECommerce.Business.Concrete
                 // Ürünü veri erişim katmanında günceller ve güncellenmiş ürün ID'sini alır.
                 var updatedProductId = await _productRepository.UpdateProductAsync(product);
                 // Başarıyla güncellendiğinde ServiceResult ile güncellenmiş ürün ID'si döner.
-                return ServiceResult<int>.SuccessResult(updatedProductId, "Ürün başarıyla güncellendi.");
+                // HTTP 200 (OK) durumu ile döner.
+                return ServiceResult<int>.SuccessResult(updatedProductId, "Ürün başarıyla güncellendi.", HttpStatusCode.OK);
             }
             catch (Exception ex)
             {
                 // Hata durumunda ServiceResult ile hata mesajı döner.
-                return ServiceResult<int>.FailureResult($"Ürün güncellenirken bir hata oluştu: {ex.Message}");
+                
+                return ServiceResult<int>.FailureResult($"Ürün güncellenirken bir hata oluştu: {ex.Message}", HttpStatusCode.InternalServerError);
             }
         }
 
@@ -97,12 +104,14 @@ namespace ECommerce.Business.Concrete
                 // Ürünü veri erişim katmanında siler ve silinmiş ürün ID'sini alır.
                 var deletedProductId = await _productRepository.DeleteProductAsync(productId, deletedBy);
                 // Başarıyla silindiğinde ServiceResult ile silinmiş ürün ID'si döner.
-                return ServiceResult<int>.SuccessResult(deletedProductId, "Ürün başarıyla silindi.");
+                // HTTP 200 (OK) durumu ile döner.
+                return ServiceResult<int>.SuccessResult(deletedProductId, "Ürün başarıyla silindi.", HttpStatusCode.OK);
             }
             catch (Exception ex)
             {
                 // Hata durumunda ServiceResult ile hata mesajı döner.
-                return ServiceResult<int>.FailureResult($"Ürün silinirken bir hata oluştu: {ex.Message}");
+               
+                return ServiceResult<int>.FailureResult($"Ürün silinirken bir hata oluştu: {ex.Message}", HttpStatusCode.NotAcceptable);
             }
         }
     }

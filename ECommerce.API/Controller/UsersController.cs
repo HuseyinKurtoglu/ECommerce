@@ -21,8 +21,9 @@ public class UserController : ControllerBase
     {
         // Kullanıcı servisini kullanarak kullanıcıyı getirir.
         var result = _userService.GetUserById(id);
-        // Sonuç başarılıysa kullanıcıyı döner, aksi takdirde hata mesajı döner.
-        return result.Success ? Ok(result) : BadRequest(result.Message);
+
+        // Sonuç başarılıysa kullanıcıyı ve status kodunu döner, aksi takdirde hata mesajı ve status kodunu döner.
+        return StatusCode((int)result.StatusCode, result);
     }
 
     // Yeni bir kullanıcı ekler.
@@ -31,8 +32,9 @@ public class UserController : ControllerBase
     {
         // Kullanıcı servisini kullanarak yeni kullanıcıyı ekler.
         var result = _userService.AddUser(user);
-        // Sonuç başarılıysa eklenen kullanıcıyı döner, aksi takdirde hata mesajı döner.
-        return result.Success ? Ok(result) : BadRequest(result.Message);
+
+        // Sonuç başarılıysa eklenen kullanıcıyı ve status kodunu döner, aksi takdirde hata mesajı ve status kodunu döner.
+        return StatusCode((int)result.StatusCode, result);
     }
 
     // Var olan bir kullanıcıyı günceller.
@@ -41,7 +43,8 @@ public class UserController : ControllerBase
     {
         // Kullanıcı servisini kullanarak mevcut kullanıcıyı günceller.
         var result = _userService.UpdateUser(id, user);
-        // Sonuç başarılıysa güncellenmiş kullanıcıyı döner, aksi takdirde hata mesajı döner.
-        return result.Success ? Ok(result) : BadRequest(result.Message);
+
+        // Sonuç başarılıysa güncellenmiş kullanıcıyı ve status kodunu döner, aksi takdirde hata mesajı ve status kodunu döner.
+        return StatusCode((int)result.StatusCode, result);
     }
 }
