@@ -40,6 +40,7 @@ public class UserService : IUserService
             // Beklenmeyen bir hata oluşursa hata mesajı döner.
             return ServiceResult<User>.FailureResult($"Kullanıcı getirilirken bir hata oluştu: {ex.Message}");
         }
+
     }
 
     // Yeni bir kullanıcı ekler.
