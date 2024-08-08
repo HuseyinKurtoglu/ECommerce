@@ -12,6 +12,7 @@ using FluentValidation;
 using ECommerce.Entities;
 using ECommerce.DataAcces.Validator;
 using ECommerce.DataAcces.Validator.ECommerce.DataAcces.Validator;
+using ECommerce.Business.ValidationRules;
 
 
 public class Startup
@@ -48,6 +49,7 @@ public class Startup
         services.AddScoped<IValidator<Shipper>, ShipperValidator>();
         services.AddScoped<IValidator<OrderStatus>, OrderStatusValidator>();
         services.AddScoped<IValidator<ProductReview>, ProductReviewValidator>();
+        services.AddScoped<IValidator<Category>, CategoryValidator>();
         // İş servislerini ve repository'leri ekler.
         services.AddTransient<IOrderService, OrderService>();
         services.AddTransient<IOrderRepository, OrderRepository>();
@@ -63,6 +65,9 @@ public class Startup
         services.AddScoped<IOrderStatusService, OrderStatusService>();
         services.AddScoped<IProductReviewRepository, ProductReviewRepository>();
         services.AddScoped<IProductReviewService, ProductReviewService>();
+        services.AddScoped<ICategoryRepository, CategoryRepository>();
+        services.AddScoped<ICategoryService, CategoryService>();
+
         // Veritabanı bağlantısını Scoped olarak ekler.
         services.AddScoped<IDbConnection>(sp => new SqlConnection(Configuration.GetConnectionString("DefaultConnection")));
     }
