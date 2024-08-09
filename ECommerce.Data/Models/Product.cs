@@ -1,44 +1,70 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace ECommerce.DataAcces.Models;
-
-public partial class Product
+namespace ECommerce.DataAcces.Models
 {
-    public int ProductId { get; set; }
+    public partial class Product
+    {
+        public int ProductId { get; set; }
 
-    public string ProductName { get; set; } = null!;
+        public string ProductName { get; set; } = null!;
 
-    public string Description { get; set; } = null!;
+        public string Description { get; set; } = null!;
 
-    public decimal Price { get; set; }
+        public decimal Price { get; set; }
 
-    public int StockQuantity { get; set; }
+        public int StockQuantity { get; set; }
 
-    public int? CategoryId { get; set; }
+        public int? CategoryId { get; set; }
 
-    public DateTime? CreatedDate { get; set; }
+        public DateTime? CreatedDate { get; set; }
 
-    public int? CreatedBy { get; set; }
+        public int? CreatedBy { get; set; }
 
-    public DateTime? UpdatedDate { get; set; }
+        public DateTime? UpdatedDate { get; set; }
 
-    public int? UpdatedBy { get; set; }
+        public int? UpdatedBy { get; set; }
 
-    public DateTime? DeletedDate { get; set; }
+        public DateTime? DeletedDate { get; set; }
 
-    public int? DeletedBy { get; set; }
+        public int? DeletedBy { get; set; }
 
-    public bool? IsDeleted { get; set; }
+        public bool? IsDeleted { get; set; }
 
-    public bool? IsActive { get; set; }
+        public bool? IsActive { get; set; }
 
-    public virtual Category? Category { get; set; }
+        public virtual Category? Category { get; set; }
 
-    public virtual ICollection<Image> Images { get; set; } = new List<Image>();
+        public virtual ICollection<Image> Images { get; set; } = new List<Image>();
 
-    public virtual ICollection<OrderDetail> OrderDetails { get; set; } = new List<OrderDetail>();
+        public virtual ICollection<OrderDetail> OrderDetails { get; set; } = new List<OrderDetail>();
 
-    public virtual ICollection<ProductReview> ProductReviews { get; set; } = new List<ProductReview>();
-    public bool Success { get; set; }
+        public virtual ICollection<ProductReview> ProductReviews { get; set; } = new List<ProductReview>();
+
+        public bool Success { get; set; }
+
+        // Constructor to initialize CreatedDate and IsActive
+        public Product()
+        {
+            CreatedDate = DateTime.UtcNow;
+            IsActive = true; // Varsayılan olarak aktif olarak ayarla
+        }
+
+        // Method to update UpdatedDate and UpdatedBy
+        public void Update(int updatedBy)
+        {
+            UpdatedDate = DateTime.UtcNow;
+            UpdatedBy = updatedBy;
+            IsDeleted = false; // Güncelleme yapıldığında silinmiş olma durumunu sıfırla
+        }
+
+        // Method to delete Product
+        public void Delete(int deletedBy)
+        {
+            DeletedDate = DateTime.UtcNow;
+            DeletedBy = deletedBy;
+            IsDeleted = true;
+            IsActive = false; // Silindiğinde aktiflik durumunu güncelle
+        }
+    }
 }

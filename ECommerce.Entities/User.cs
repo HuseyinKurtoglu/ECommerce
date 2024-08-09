@@ -14,6 +14,18 @@ namespace ECommerce.Entities
         public string Password { get; set; }
         public DateTime CreatedDate { get; set; }
         public DateTime UpdatedDate { get; set; }
-    
+
+        // Constructor
+        public User()
+        {
+            CreatedDate = DateTime.UtcNow; // Otomatik olarak oluşturma tarihi ayarlama
+            UpdatedDate = DateTime.UtcNow; // İlk güncelleme tarihi ayarlama
+        }
+
+        // Method to update UpdatedDate
+        public void Update()
+        {
+            UpdatedDate = DateTime.UtcNow;
+        }
     }
 }
