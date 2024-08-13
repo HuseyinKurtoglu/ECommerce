@@ -34,28 +34,27 @@ namespace ECommerce.DataAcces.Models
 
         public virtual Product? Product { get; set; }
 
-        // Constructor to initialize CreatedDate and IsActive
+  
         public OrderDetail()
         {
             CreatedDate = DateTime.UtcNow;
-            IsActive = true; // Varsayılan olarak aktif olarak ayarla
+            IsActive = true;
+            IsDeleted = false;
         }
 
-        // Method to update UpdatedDate and UpdatedBy
+      
         public void Update(int updatedBy)
         {
             UpdatedDate = DateTime.UtcNow;
             UpdatedBy = updatedBy;
-            IsDeleted = false; // Güncelleme yapıldığında silinmiş olma durumunu sıfırla
         }
 
-        // Method to delete OrderDetail
         public void Delete(int deletedBy)
         {
             DeletedDate = DateTime.UtcNow;
             DeletedBy = deletedBy;
             IsDeleted = true;
-            IsActive = false; // Silindiğinde aktiflik durumunu güncelle
+            IsActive = false;
         }
     }
 }

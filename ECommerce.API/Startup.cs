@@ -55,6 +55,7 @@ public class Startup
         services.AddScoped<IValidator<Category>, CategoryValidator>();
         services.AddScoped<IValidator<Image>, ImageValidator>();
         services.AddScoped<IValidator<Payment>, PaymentValidator>();
+        services.AddScoped<IValidator<Employee>, EmployeeValidator>();
         // İş servislerini ve repository'leri ekler.
         services.AddTransient<IOrderService, OrderService>();
         services.AddTransient<IOrderRepository, OrderRepository>();
@@ -76,6 +77,8 @@ public class Startup
         services.AddScoped<IPaymentService, PaymentService>();
         services.AddScoped<IImageRepository, ImageRepository>();
         services.AddScoped<IImageService, ImageService>();
+        services.AddScoped<IEmployeeRepository, EmployeeRepository>();
+        services.AddScoped<IEmployeeService, EmployeeService>();
         // Veritabanı bağlantısını Scoped olarak ekler.
         services.AddScoped<IDbConnection>(sp => new SqlConnection(Configuration.GetConnectionString("DefaultConnection")));
     }

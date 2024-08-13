@@ -23,9 +23,9 @@ namespace ECommerce.DataAcces.Models
 
         public string PostalCode { get; set; } = null!;
 
-        public DateTime? CreatedDate { get; set; }
+        public DateTime CreatedDate { get; set; } = DateTime.UtcNow; // Varsayılan olarak CreatedDate'yi ayarla
 
-        public int? CreatedBy { get; set; }
+        public int CreatedBy { get; set; }
 
         public DateTime? UpdatedDate { get; set; }
 
@@ -35,22 +35,22 @@ namespace ECommerce.DataAcces.Models
 
         public int? DeletedBy { get; set; }
 
-        public bool? IsDeleted { get; set; }
+        public bool IsDeleted { get; set; } = false; // Varsayılan olarak IsDeleted'yi ayarla
 
-        public bool? IsActive { get; set; }
+        public bool IsActive { get; set; } = true; // Varsayılan olarak IsActive'yi ayarla
 
         public virtual ICollection<Order> Orders { get; set; } = new List<Order>();
 
         public virtual ICollection<ProductReview> ProductReviews { get; set; } = new List<ProductReview>();
 
-        // Constructor to initialize CreatedDate and IsActive
+        
         public Customer()
         {
             CreatedDate = DateTime.UtcNow;
             IsActive = true; // Varsayılan olarak aktif olarak ayarla
         }
 
-        // Method to update UpdatedDate and UpdatedBy
+        
         public void Update(int updatedBy)
         {
             UpdatedDate = DateTime.UtcNow;
@@ -58,7 +58,7 @@ namespace ECommerce.DataAcces.Models
             IsDeleted = false; // Güncelleme yapıldığında silinmiş olma durumunu sıfırla
         }
 
-        // Method to delete Customer
+        
         public void Delete(int deletedBy)
         {
             DeletedDate = DateTime.UtcNow;

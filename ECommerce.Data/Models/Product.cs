@@ -17,9 +17,9 @@ namespace ECommerce.DataAcces.Models
 
         public int? CategoryId { get; set; }
 
-        public DateTime? CreatedDate { get; set; }
+        public DateTime CreatedDate { get; set; } = DateTime.UtcNow; // Varsayılan olarak CreatedDate'yi ayarla
 
-        public int? CreatedBy { get; set; }
+        public int CreatedBy { get; set; }
 
         public DateTime? UpdatedDate { get; set; }
 
@@ -29,9 +29,9 @@ namespace ECommerce.DataAcces.Models
 
         public int? DeletedBy { get; set; }
 
-        public bool? IsDeleted { get; set; }
+        public bool IsDeleted { get; set; } = false; // Varsayılan olarak IsDeleted'yi ayarla
 
-        public bool? IsActive { get; set; }
+        public bool IsActive { get; set; } = true; // Varsayılan olarak IsActive'yi ayarla
 
         public virtual Category? Category { get; set; }
 
@@ -43,14 +43,12 @@ namespace ECommerce.DataAcces.Models
 
         public bool Success { get; set; }
 
-        // Constructor to initialize CreatedDate and IsActive
         public Product()
         {
             CreatedDate = DateTime.UtcNow;
             IsActive = true; // Varsayılan olarak aktif olarak ayarla
         }
 
-        // Method to update UpdatedDate and UpdatedBy
         public void Update(int updatedBy)
         {
             UpdatedDate = DateTime.UtcNow;
@@ -58,7 +56,6 @@ namespace ECommerce.DataAcces.Models
             IsDeleted = false; // Güncelleme yapıldığında silinmiş olma durumunu sıfırla
         }
 
-        // Method to delete Product
         public void Delete(int deletedBy)
         {
             DeletedDate = DateTime.UtcNow;
